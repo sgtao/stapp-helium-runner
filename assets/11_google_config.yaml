@@ -1,0 +1,19 @@
+# 11_google_config.yaml
+browser:
+  name: chrome
+  options:
+    - "--headless"
+    - "--disable-gpu"
+  start_url: "google.com"
+  window_size:
+    width: 1920
+    height: 1080
+actions:
+  - type: write
+    target: "search_box"
+    text: "helium selenium github"
+  - type: press
+    key: ENTER
+  - type: wait
+    seconds: 5
+end_action: stop_run
