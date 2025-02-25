@@ -9,7 +9,7 @@ browser:
     width: 1920
     height: 1080
 actions:
-  - type: write
+  - type: write_message
     target: "search_box"
     text: "helium selenium github"
   - type: press

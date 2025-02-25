@@ -29,7 +29,9 @@ def run_browser_actions(config):
         return
 
     for action in actions:
-        if action["type"] == "write":
+        if action["type"] == "write_message":
+            hl.write(st.session_state.write_message)
+        elif action["type"] == "write":
             hl.write(action["text"])
         elif action["type"] == "press":
             hl.press(ENTER)
@@ -45,16 +47,38 @@ def run_browser_actions(config):
         st.error(f"Unsupported end action: {end_action}")
 
 
-st.title("Helium YAML Config")
+def init_st_session_state():
+    if "write_message" not in st.session_state:
+        st.session_state.write_message = ""
 
-uploaded_file = st.file_uploader("Choose a YAML config file", type="yaml")
 
-if uploaded_file is not None:
-    try:
-        config = yaml.safe_load(uploaded_file)
-        # st.markdown(config)
-        st.write(config)
-        if st.button("Start Config"):
-            run_browser_actions(config)
-    except yaml.YAMLError as e:
-        st.error(f"Error loading YAML file: {e}")
+def sidebar():
+    with st.sidebar:
+        default_message = "foo bar"
+        if st.session_state.write_message == "":
+            default_message = st.session_state.write_message
+        st.session_state.write_message = st.text_input(
+            "Enter message to write", value=default_message
+        )
+
+
+def main():
+    st.title("Helium YAML Config")
+
+    uploaded_file = st.file_uploader("Choose a YAML config file", type="yaml")
+
+    if uploaded_file is not None:
+        try:
+            config = yaml.safe_load(uploaded_file)
+            # st.markdown(config)
+            st.write(config)
+            if st.button("Start Config"):
+                run_browser_actions(config)
+        except yaml.YAMLError as e:
+            st.error(f"Error loading YAML file: {e}")
+
+
+if __name__ == "__main__":
+    init_st_session_state()
+    sidebar()
+    main()
