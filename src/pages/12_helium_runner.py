@@ -1,7 +1,4 @@
-# 12_run_helium_config.py
-from helium import (
-    ENTER,
-)
+# 12_helium_runner.py
 import helium as hl
 import streamlit as st
 import yaml
@@ -11,6 +8,7 @@ import yaml
 def confirm_user(message):
     st.write(message)
     if st.button("OK"):
+        hl.kill_browser()
         st.rerun()
 
 
@@ -31,10 +29,18 @@ def run_browser_actions(config):
     for action in actions:
         if action["type"] == "write_message":
             hl.write(st.session_state.write_message)
+        # elif action["type"] == "write":
+        #     hl.write(action["text"])
         elif action["type"] == "write":
-            hl.write(action["text"])
+            try:
+                hl.write(action["text"], into=action["target"])
+            except LookupError:
+                st.error(
+                    f"Element with selector '{action['target']}' not found."
+                )
+                return
         elif action["type"] == "press":
-            hl.press(ENTER)
+            hl.press(hl.ENTER)
         elif action["type"] == "wait":
             # wait(action["seconds"])
             confirm_user("Waiting Run...")
@@ -63,7 +69,7 @@ def sidebar():
 
 
 def main():
-    st.title("Helium YAML Config")
+    st.title("Helium Runner")
 
     uploaded_file = st.file_uploader("Choose a YAML config file", type="yaml")
 
@@ -72,7 +78,7 @@ def main():
             config = yaml.safe_load(uploaded_file)
             # st.markdown(config)
             st.write(config)
-            if st.button("Start Config"):
+            if st.button("Run Config"):
                 run_browser_actions(config)
         except yaml.YAMLError as e:
             st.error(f"Error loading YAML file: {e}")
