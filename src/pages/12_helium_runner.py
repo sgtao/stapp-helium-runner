@@ -75,7 +75,7 @@ def run_browser_actions(config):
         hl.kill_browser()
     elif end_action == "stop_run":
         st.info("Finish run!")
-        confirm_user("Close Browser")
+        confirm_user("Close Browser?")
     else:
         st.error(f"Unsupported end action: {end_action}")
 
