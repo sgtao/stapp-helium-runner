@@ -21,7 +21,6 @@ taskipy = "^1.13.0"
 flake8 = "^7.1.0"
 black = "^24.4.2"
 pytest-cov = "^5.0.0"
-pyinstaller = "^6.11.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -46,9 +45,3 @@ export-req-with-dev = { cmd = "poetry export -f requirements.txt -o requirements
 # Docker commands
 docker-build = { cmd = "docker build -t my-stapp .", help = "build Docker image" }
 docker-run = { cmd = "docker run -p 8051:8051 my-stapp", help = "run Docker container" }
-
-# make distribution package
-rm-dist = { cmd = "rm -rf build dist", help = "remove build and dist directory" }
-build = { cmd = "pyinstaller run_stapp.spec --clean", help = "build distribution package" }
-copy-to-dist = { cmd = "cp -r src .streamlit hooks dist/run_stapp/.", help = "copy additional files to dist" }
-make-dist = { cmd = "task rm-dist && task build && task copy-to-dist", help = "make distribution package" }
