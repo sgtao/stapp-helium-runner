@@ -4,6 +4,7 @@ import time
 import helium as hl
 import streamlit as st
 import yaml
+from selenium.webdriver.remote.webdriver import WebDriver
 
 
 @st.dialog("Pause for next action")
@@ -18,15 +19,13 @@ def confirm_user(message):
         st.rerun()
 
 
-def get_page_info(web_driver):
+def get_page_info(web_driver: WebDriver):
     """
     ページタイトル、URL、HTMLを取得する関数。
     """
     title = web_driver.title
     url = web_driver.current_url
-    # html = hl.get_page_source()
-    html = "foo-bar"
-    return {"title": title, "url": url, "html": html}
+    return {"title": title, "url": url}
 
 
 def run_browser_actions(config):
@@ -34,8 +33,6 @@ def run_browser_actions(config):
     start_url = config["browser"]["start_url"]
     actions = config["actions"]
     end_action = config["end_action"]
-    if "hl_runner" not in st.session_state:
-        st.session_state["hl_runner"] = {}
 
     if browser_name == "chrome":
         hl.start_chrome(start_url)
@@ -87,7 +84,7 @@ def run_browser_actions(config):
                 )
                 return
 
-        elif action["type"] == "press":
+        elif action["type"] == "pressENTER":
             hl.press(hl.ENTER)
         elif action["type"] == "wait":
             # wait(action["seconds"])
@@ -109,12 +106,18 @@ def run_browser_actions(config):
                 page_info = get_page_info(driver)
 
                 # 変数名を取得
-                variable = action.get("variable", "page_info")
+                variable = action.get("variable")
 
                 # Streamlitのセッションステートに格納
                 st.session_state.hl_runner[variable] = page_info
-                st.info(f"ページ情報を変数 [{variable}] に保存しました。")
-                st.write(st.session_state.hl_runner[variable])
+
+                if page_info:
+                    st.info(f"ページ情報を変数 [{variable}] に保存しました。")
+                    with st.expander(f"{variable}:", expanded=False):
+                        st.write(st.session_state.hl_runner[variable])
+                else:
+                    st.warning("ページ情報がありません。")
+
             except Exception as e:
                 st.error(f"ページ情報の取得に失敗しました: {e}")
                 return
@@ -131,6 +134,8 @@ def run_browser_actions(config):
 def init_st_session_state():
     if "write_message" not in st.session_state:
         st.session_state.write_message = ""
+    if "hl_runner" not in st.session_state:
+        st.session_state.hl_runner = {}
 
 
 def sidebar():
