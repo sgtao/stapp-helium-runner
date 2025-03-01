@@ -6,6 +6,8 @@ import streamlit as st
 import yaml
 from selenium.webdriver.remote.webdriver import WebDriver
 
+from components.UserKeys import UserKeys
+
 
 @st.dialog("Pause for next action")
 def confirm_user(message):
@@ -50,6 +52,21 @@ def run_browser_actions(config):
         elif action["type"] == "write":
             try:
                 hl.write(action["text"], into=action["target"])
+            except LookupError:
+                st.error(
+                    f"'{action['type']}': '{action['target']}' not found."
+                )
+                return
+        elif action["type"] == "write_user_key":
+            try:
+                keyname = action.get("key")
+                if keyname not in st.session_state:
+                    st.error(
+                        f"{action['type']}'Key({keyname}) Not Found in state!"
+                    )
+                    return
+                value = st.session_state[keyname]
+                hl.write(value, into=action["target"])
             except LookupError:
                 st.error(
                     f"'{action['type']}': '{action['target']}' not found."
@@ -144,12 +161,8 @@ def init_st_session_state():
 
 def sidebar():
     with st.sidebar:
-        default_message = "foo bar"
-        if st.session_state.write_message == "":
-            default_message = st.session_state.write_message
-        st.session_state.write_message = st.text_input(
-            "Enter message to write", value=default_message
-        )
+        user_keys = UserKeys()
+        user_keys.input_key()
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
