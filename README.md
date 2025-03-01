@@ -10,7 +10,8 @@
 ### Setup
 ```sh
 poetry install
-poetry shell
+# poetry shell # for poetry 1.x version
+eval $(poetry env activate) # for poetry 2.x version
 ```
 
 ### コマンド一覧
