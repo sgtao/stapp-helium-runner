@@ -9,8 +9,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
 streamlit = "^1.35.0"
-altair = "^5.3.0"
-pandas = "^2.2.2"
 helium = "^5.1.1"
 pyyaml = "^6.0.2"
 
