@@ -109,12 +109,16 @@ def run_browser_actions(config):
                 variable = action.get("variable")
 
                 # Streamlitのセッションステートに格納
-                st.session_state.hl_runner[variable] = page_info
+                # st.session_state.hl_runner[variable] = page_info
+                st.session_state.hl_runner.append(
+                    {
+                        "key": variable,
+                        "value": page_info,
+                    }
+                )
 
                 if page_info:
                     st.info(f"ページ情報を変数 [{variable}] に保存しました。")
-                    with st.expander(f"{variable}:", expanded=False):
-                        st.write(st.session_state.hl_runner[variable])
                 else:
                     st.warning("ページ情報がありません。")
 
@@ -135,7 +139,7 @@ def init_st_session_state():
     if "write_message" not in st.session_state:
         st.session_state.write_message = ""
     if "hl_runner" not in st.session_state:
-        st.session_state.hl_runner = {}
+        st.session_state.hl_runner = []
 
 
 def sidebar():
@@ -147,6 +151,32 @@ def sidebar():
             "Enter message to write", value=default_message
         )
 
+        with st.expander("session_state", expanded=False):
+            st.write(st.session_state)
+
+
+def config_viewer(config):
+    with st.expander("Show Config File:", expanded=False):
+        st.write(config)
+    # st.markdown(config)
+    if st.button("Run Config", type="primary"):
+        run_browser_actions(config)
+
+
+def hl_runner_viewer():
+    # st.session_state.hl_runner の内容を表示
+    if len(st.session_state.hl_runner) == 0:
+        st.info("ページ情報がありません。")
+        return
+
+    st.info("取得したページ情報:")
+    for item in st.session_state.hl_runner:
+        variable_name = item["key"]
+        page_info = item["value"]
+
+        with st.expander(f"変数名: {variable_name}:", expanded=False):
+            st.write(page_info)
+
 
 def main():
     st.title("Helium Runner")
@@ -156,13 +186,12 @@ def main():
     if uploaded_file is not None:
         try:
             config = yaml.safe_load(uploaded_file)
-            with st.expander("Show Config File:", expanded=False):
-                st.write(config)
-            # st.markdown(config)
-            if st.button("Run Config", type="primary"):
-                run_browser_actions(config)
+            config_viewer(config)
         except yaml.YAMLError as e:
             st.error(f"Error loading YAML file: {e}")
+
+    # st.session_state.hl_runner の内容を表示
+    hl_runner_viewer()
 
 
 if __name__ == "__main__":
