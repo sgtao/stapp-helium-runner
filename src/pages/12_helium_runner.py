@@ -18,11 +18,24 @@ def confirm_user(message):
         st.rerun()
 
 
+def get_page_info(web_driver):
+    """
+    ページタイトル、URL、HTMLを取得する関数。
+    """
+    title = web_driver.title
+    url = web_driver.current_url
+    # html = hl.get_page_source()
+    html = "foo-bar"
+    return {"title": title, "url": url, "html": html}
+
+
 def run_browser_actions(config):
     browser_name = config["browser"]["name"]
     start_url = config["browser"]["start_url"]
     actions = config["actions"]
     end_action = config["end_action"]
+    if "hl_runner" not in st.session_state:
+        st.session_state["hl_runner"] = {}
 
     if browser_name == "chrome":
         hl.start_chrome(start_url)
@@ -47,17 +60,33 @@ def run_browser_actions(config):
                 return
         elif action["type"] == "click":
             try:
-                if action["target"] == "はじめる":
-                    hl.click(
-                        hl.Button("はじめる", below=hl.Text("GLOBIS 学び放題"))
-                    )
+                target_name = action["target"]
+                if action["target"].startswith("Button:"):
+                    # action["target"] が "Button:" で始まる場合は Button として扱う
+                    len_ommit = len("Button:")
+                    target_name = action["target"][len_ommit:]
+                    hl.wait_until(hl.Button(target_name).exists)
+                elif action["target"].startswith("Link:"):
+                    # action["target"] が "Link:" で始まる場合は Link として扱う
+                    len_ommit = len("Link:")
+                    target_name = action["target"][len_ommit:]
+                    hl.wait_until(hl.Link(target_name).exists)
+                elif action["target"].startswith("Text:"):
+                    # action["target"] が "Text:" で始まる場合は 直接指定する
+                    len_ommit = len("Text:")
+                    target_name = action["target"][len_ommit:]
+                    hl.wait_until(hl.Text(target_name).exists)
                 else:
-                    hl.click(action["target"])
+                    # それ以外の場合は、要素名を直接指定して待機する
+                    hl.wait_until(hl.Text(target_name).exists)
+                # Click Target
+                hl.click(target_name)
             except LookupError:
                 st.error(
                     f"'{action['type']}': '{action['target']}' not found."
                 )
                 return
+
         elif action["type"] == "press":
             hl.press(hl.ENTER)
         elif action["type"] == "wait":
@@ -69,6 +98,25 @@ def run_browser_actions(config):
                 hl.go_to(action["url"])
             except Exception as e:
                 st.error(f"Error navigating to URL: {e}")
+                return
+
+        elif action["type"] == "scrape_page":
+            try:
+                # SeleniumのWebDriverオブジェクトを取得
+                driver = hl.get_driver()
+
+                # ページ情報を取得
+                page_info = get_page_info(driver)
+
+                # 変数名を取得
+                variable = action.get("variable", "page_info")
+
+                # Streamlitのセッションステートに格納
+                st.session_state.hl_runner[variable] = page_info
+                st.info(f"ページ情報を変数 [{variable}] に保存しました。")
+                st.write(st.session_state.hl_runner[variable])
+            except Exception as e:
+                st.error(f"ページ情報の取得に失敗しました: {e}")
                 return
 
     if end_action == "kill_browser":
@@ -106,7 +154,7 @@ def main():
             with st.expander("Show Config File:", expanded=False):
                 st.write(config)
             # st.markdown(config)
-            if st.button("Run Config"):
+            if st.button("Run Config", type="primary"):
                 run_browser_actions(config)
         except yaml.YAMLError as e:
             st.error(f"Error loading YAML file: {e}")
