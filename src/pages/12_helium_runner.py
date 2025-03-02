@@ -1,6 +1,7 @@
 # 12_helium_runner.py
 import time
 
+from bs4 import BeautifulSoup as bs
 import helium as hl
 import streamlit as st
 import yaml
@@ -22,13 +23,25 @@ def confirm_user(message):
         st.rerun()
 
 
-def get_page_info(web_driver: WebDriver):
+def get_page_info(web_driver: WebDriver, target="all"):
     """
     ページタイトル、URL、HTMLを取得する関数。
     """
     title = web_driver.title
     url = web_driver.current_url
-    return {"title": title, "url": url}
+
+    if target == "all":
+        html = web_driver.page_source
+    else:
+        # html = web_driver.find_element_by_name(target).text
+        # Beautiful SoupでHTMLを解析
+        soup = bs(web_driver.page_source, "html.parser")
+        # 指定されたセレクタに一致するすべての要素を検索
+        elements = soup.select(target)
+        # 各要素のテキストコンテンツを抽出
+        html = [element.get_text() for element in elements]
+
+    return {"title": title, "url": url, "html": html}
 
 
 def run_browser_actions(config):
@@ -125,12 +138,16 @@ def run_browser_actions(config):
                 return
 
         elif action["type"] == "scrape_page":
+            target = "all"
+            if "target" in action:
+                target = action["target"]
+
             try:
                 # SeleniumのWebDriverオブジェクトを取得
                 driver = hl.get_driver()
 
                 # ページ情報を取得
-                page_info = get_page_info(driver)
+                page_info = get_page_info(driver, target)
 
                 # 変数名を取得
                 variable = action.get("variable")
