@@ -16,6 +16,7 @@ def confirm_user(message):
     col1, col2 = st.columns(2)
     if col1.button("OK"):
         hl.kill_browser()
+        st.session_state.web_driver = None
         st.rerun()
     if col2.button("Cancel"):
         st.rerun()
@@ -31,18 +32,27 @@ def get_page_info(web_driver: WebDriver):
 
 
 def run_browser_actions(config):
-    browser_name = config["browser"]["name"]
-    start_url = config["browser"]["start_url"]
-    actions = config["actions"]
-    end_action = config["end_action"]
 
-    if browser_name == "chrome":
-        hl.start_chrome(start_url)
-    elif browser_name == "firefox":
-        hl.start_firefox(start_url)
-    else:
-        st.error(f"Unsupported browser: {browser_name}")
-        return
+    # browser設定が存在する場合のみブラウザを起動
+    if "browser" in config:
+        browser_name = config["browser"]["name"]
+        start_url = config["browser"]["start_url"]
+
+        if browser_name == "chrome":
+            st.session_state.web_driver = hl.start_chrome(start_url)
+        elif browser_name == "firefox":
+            st.session_state.web_driver = hl.start_firefox(start_url)
+        else:
+            st.error(f"Unsupported browser: {browser_name}")
+            st.session_state.web_driver = None
+            return
+
+    actions = []
+    if "actions" in config:
+        actions = config["actions"]
+        if st.session_state.web_driver is None:
+            st.error("Browser not activate!")
+            return
 
     for action in actions:
         if action["type"] == "write_message":
@@ -143,13 +153,17 @@ def run_browser_actions(config):
                 st.error(f"ページ情報の取得に失敗しました: {e}")
                 return
 
-    if end_action == "kill_browser":
-        hl.kill_browser()
-    elif end_action == "stop_run":
-        st.info("Finish run!")
-        confirm_user("Close Browser?")
-    else:
-        st.error(f"Unsupported end action: {end_action}")
+    if "end_action" in config:
+        end_action = config["end_action"]
+        if end_action == "kill_browser":
+            hl.kill_browser()
+            st.session_state.web_driver = None
+            return
+        elif end_action == "stop_run":
+            st.info("Finish run!")
+            confirm_user("Close Browser?")
+        else:
+            st.error(f"Unsupported end action: {end_action}")
 
 
 def init_st_session_state():
@@ -157,6 +171,8 @@ def init_st_session_state():
         st.session_state.write_message = ""
     if "hl_runner" not in st.session_state:
         st.session_state.hl_runner = []
+    if "web_driver" not in st.session_state:
+        st.session_state.web_driver = None
 
 
 def sidebar():
