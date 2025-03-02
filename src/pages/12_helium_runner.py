@@ -216,12 +216,32 @@ def hl_runner_viewer():
         return
 
     st.info("取得したページ情報:")
-    for item in st.session_state.hl_runner:
+
+    # 削除対象のアイテムを格納するリスト
+    items_to_delete = []
+
+    for i, item in enumerate(st.session_state.hl_runner):
         variable_name = item["key"]
         page_info = item["value"]
 
         with st.expander(f"変数名: {variable_name}:", expanded=False):
             st.write(page_info)
+
+            # チェックボックスを追加
+            delete_checkbox = st.checkbox(
+                f"削除: {variable_name}", key=f"delete_{i}"
+            )
+            if delete_checkbox:
+                items_to_delete.append(i)
+
+    # 削除ボタンを追加
+    if st.button("選択したアイテムを削除"):
+        # 削除対象のアイテムをセッションステートから削除 (逆順に削除)
+        for i in sorted(items_to_delete, reverse=True):
+            del st.session_state.hl_runner[i]
+
+        st.success("選択したアイテムを削除しました。")
+        st.rerun()  # アプリを再実行して表示を更新
 
 
 def main():
