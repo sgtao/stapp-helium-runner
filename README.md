@@ -1,4 +1,4 @@
-# stapp-practice-helium
+# stapp-helium-runner
 [streamlit](https://streamlit.io/)アプリUI上で、[Helium](https://github.com/mherrmann/helium)を使ってみる
 
 ## コンテンツ

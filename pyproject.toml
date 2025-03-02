@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "stapp-practice-helium"
+name = "stapp-helium-runner"
 version = "0.1.1"
 description = "streamlitアプリUI上で、Heliumを使ってみる"
 authors = ["Shogo Ogami <sg.tao.so@gmail.com>"]
