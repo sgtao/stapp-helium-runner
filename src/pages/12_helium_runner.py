@@ -8,6 +8,7 @@ import yaml
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from components.UserKeys import UserKeys
+from components.UserInputs import UserInputs
 
 
 @st.dialog("Pause for next action")
@@ -132,7 +133,14 @@ def run_browser_actions(config):
             time.sleep(action["seconds"])
         elif action["type"] == "go_to":
             try:
-                hl.go_to(action["url"])
+                url = "..."
+                if "url" in action:
+                    url = action.get("url")
+                if "user_default" in action:
+                    url = action.get("user_default")
+                if "user_url" in action:
+                    url = get_state_user_inputs(action.get("user_url"))
+                hl.go_to(url)
             except Exception as e:
                 st.error(f"Error navigating to URL: {e}")
                 return
@@ -190,12 +198,22 @@ def init_st_session_state():
         st.session_state.hl_runner = []
     if "web_driver" not in st.session_state:
         st.session_state.web_driver = None
+    if "user_inputs" not in st.session_state:
+        st.session_state.user_inputs = []
+
+
+def get_state_user_inputs(key):
+    if key == "user_input_0":
+        return st.session_state.user_inputs[0]["value"]
 
 
 def sidebar():
     with st.sidebar:
         user_keys = UserKeys()
         user_keys.input_key()
+
+        user_inputs = UserInputs()
+        user_inputs.input_expander()
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
