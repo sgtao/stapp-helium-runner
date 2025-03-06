@@ -1,4 +1,3 @@
-# 12_helium_runner.py
 import time
 
 from bs4 import BeautifulSoup as bs
@@ -99,6 +98,10 @@ def run_browser_actions(config):
         elif action["type"] == "click":
             try:
                 target_name = action["target"]
+                if "user_target" in action:
+                    target_name = get_user_input(
+                        action.get("user_target"), action.get("user_default")
+                    )
                 if action["target"].startswith("Button:"):
                     # action["target"] が "Button:" で始まる場合は Button として扱う
                     len_ommit = len("Button:")
@@ -124,22 +127,33 @@ def run_browser_actions(config):
                     f"'{action['type']}': '{action['target']}' not found."
                 )
                 return
-
-        elif action["type"] == "pressENTER":
-            hl.press(hl.ENTER)
+        elif action["type"] == "press":
+            value = action.get("value")
+            if value == "ENTER":
+                hl.press(hl.ENTER)
+            else:
+                st.error(f"'{action['type']}': '{value}' not supported.")
+                return
         elif action["type"] == "wait":
+            seconds = action.get("seconds")
+            if "user_seconds" in action:
+                seconds = get_user_input(
+                    action.get("user_seconds"), action.get("user_default")
+                )
+                seconds = float(seconds)
+
             # wait(action["seconds"])
             # confirm_user("Waiting Run...")
-            time.sleep(action["seconds"])
+            time.sleep(seconds)
         elif action["type"] == "go_to":
             try:
                 url = "..."
                 if "url" in action:
                     url = action.get("url")
-                if "user_default" in action:
-                    url = action.get("user_default")
-                if "user_url" in action:
-                    url = get_state_user_inputs(action.get("user_url"))
+                elif "user_url" in action:
+                    url = get_user_input(
+                        action.get("user_url"), action.get("user_default")
+                    )
                 hl.go_to(url)
             except Exception as e:
                 st.error(f"Error navigating to URL: {e}")
@@ -208,12 +222,13 @@ def get_state_user_inputs(key):
 
 
 def sidebar():
+    user_inputs_key = "user_inputs"
     with st.sidebar:
         user_keys = UserKeys()
         user_keys.input_key()
 
         user_inputs = UserInputs()
-        user_inputs.input_expander()
+        user_inputs.input_expander(user_inputs_key)
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
@@ -276,6 +291,23 @@ def main():
 
     # st.session_state.hl_runner の内容を表示
     hl_runner_viewer()
+
+
+def get_user_input(key, default_value):
+    """
+    ユーザー入力を取得する関数。
+    """
+    if key.startswith("user_input_"):
+        # index = int(key[{len("user_input_")} :])
+        index = int(key[11:])
+        if (
+            "user_inputs" in st.session_state
+            and len(st.session_state.user_inputs) > index
+        ):
+            return st.session_state.user_inputs[index]["value"]
+        else:
+            return default_value
+    return default_value
 
 
 if __name__ == "__main__":
