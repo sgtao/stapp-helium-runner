@@ -1,3 +1,5 @@
+# 12_helium_runner.py
+import tempfile
 import time
 
 from bs4 import BeautifulSoup as bs
@@ -201,6 +203,22 @@ def run_browser_actions(config):
         elif end_action == "stop_run":
             st.info("Finish run!")
             confirm_user("Close Browser?")
+        elif end_action == "get_screen":
+            try:
+                with tempfile.NamedTemporaryFile(
+                    suffix=".png", delete=False
+                ) as tmp_file:
+                    # ページのスナップショットを撮影
+                    driver = hl.get_driver()
+                    driver.save_screenshot(tmp_file.name)
+
+                    # スナップショットをStreamlitで表示
+                    with st.expander("Browser Snapshot:", expanded=False):
+                        st.image(tmp_file.name, caption="Page Screenshot")
+            except Exception as e:
+                st.error(f"ページ情報の取得に失敗しました: {e}")
+                return
+
         else:
             st.error(f"Unsupported end action: {end_action}")
 
