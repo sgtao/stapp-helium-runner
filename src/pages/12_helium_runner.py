@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup as bs
 import helium as hl
 import streamlit as st
 import yaml
-from selenium.webdriver.remote.webdriver import WebDriver
 
 from components.UserKeys import UserKeys
 from components.UserInputs import UserInputs
@@ -25,7 +24,7 @@ def confirm_user(message):
         st.rerun()
 
 
-def get_page_info(web_driver: WebDriver, target="all"):
+def get_page_info(web_driver, target="all"):
     """
     ページタイトル、URL、HTMLを取得する関数。
     """
