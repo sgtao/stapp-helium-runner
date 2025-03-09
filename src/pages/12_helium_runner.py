@@ -1,4 +1,4 @@
-# 12_helium_runner.py
+# helium_runner.py
 import tempfile
 import time
 
@@ -46,7 +46,6 @@ def get_page_info(web_driver, target="all"):
 
 
 def run_browser_actions(config):
-
     # browser設定が存在する場合のみブラウザを起動
     if "browser" in config:
         browser_name = config["browser"]["name"]
@@ -227,6 +226,8 @@ def init_st_session_state():
         st.session_state.write_message = ""
     if "hl_runner" not in st.session_state:
         st.session_state.hl_runner = []
+    if "hl_running" not in st.session_state:
+        st.session_state.hl_running = False
     if "web_driver" not in st.session_state:
         st.session_state.web_driver = None
     if "user_inputs" not in st.session_state:
@@ -254,12 +255,36 @@ def sidebar():
 def config_viewer(config):
     with st.expander("Show Config File:", expanded=False):
         st.write(config)
-    # st.markdown(config)
-    if st.button("Run Config", type="primary"):
-        run_browser_actions(config)
+
+    # 初回表示時または状態リセット時
+    if not st.session_state.get("hl_running"):
+        # ボタンの状態をセッションステートと連動
+        if st.button(
+            "Run Config",
+            type="primary",
+            key="run_config_main",
+            # disabled=True,
+            disabled=st.session_state.hl_running,
+        ):
+            st.session_state.hl_running = True
+            # button_container.empty()  # ボタンを即時非表示
+            st.rerun()
+
+    # 実行状態の場合
+    if st.session_state.get("hl_running"):
+        with st.spinner("処理を実行中です..."):
+            time.sleep(1)  # デモ用の遅延
+            try:
+                run_browser_actions(config)
+            except Exception as e:
+                st.error(f"実行エラー: {str(e)}")
+            finally:
+                st.session_state.hl_running = False
+                st.rerun()
 
 
 def hl_runner_viewer():
+
     # st.session_state.hl_runner の内容を表示
     if len(st.session_state.hl_runner) == 0:
         st.info("ページ情報がありません。")
@@ -302,6 +327,8 @@ def main():
     if uploaded_file is not None:
         try:
             config = yaml.safe_load(uploaded_file)
+            # st.session_state.hl_running = False
+            #
             config_viewer(config)
         except yaml.YAMLError as e:
             st.error(f"Error loading YAML file: {e}")
