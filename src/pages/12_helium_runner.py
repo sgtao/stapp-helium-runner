@@ -1,5 +1,5 @@
 # helium_runner.py
-import tempfile
+import base64
 import time
 
 from bs4 import BeautifulSoup as bs
@@ -42,7 +42,7 @@ def get_page_info(web_driver, target="all"):
         # 各要素のテキストコンテンツを抽出
         html = [element.get_text() for element in elements]
 
-    return {"title": title, "url": url, "html": html}
+    return {"type": "text", "title": title, "url": url, "html": html}
 
 
 def run_browser_actions(config):
@@ -203,19 +203,31 @@ def run_browser_actions(config):
             confirm_user("Close Browser?")
         elif end_action == "get_screen":
             try:
-                with tempfile.NamedTemporaryFile(
-                    suffix=".png", delete=False
-                ) as tmp_file:
-                    # ページのスナップショットを撮影
-                    driver = hl.get_driver()
-                    driver.save_screenshot(tmp_file.name)
+                # メモリ上でスクリーンショットを処理
+                driver = hl.get_driver()
+                screenshot_png = driver.get_screenshot_as_png()
 
-                    # スナップショットをStreamlitで表示
-                    with st.expander("Browser Snapshot:", expanded=False):
-                        st.image(tmp_file.name, caption="Page Screenshot")
+                # BASE64エンコード
+                encoded_image = base64.b64encode(screenshot_png).decode(
+                    "utf-8"
+                )
+
+                # セッションステートに保存
+                st.session_state.hl_runner.append(
+                    {
+                        "key": "screenshot",
+                        "value": {
+                            "type": "image",
+                            "data": f"data:image/png;base64,{encoded_image}",
+                            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        },
+                    }
+                )
+
+                st.success("スクリーンショットを保存しました")
+
             except Exception as e:
-                st.error(f"ページ情報の取得に失敗しました: {e}")
-                return
+                st.error(f"スクリーンショット取得失敗: {e}")
 
         else:
             st.error(f"Unsupported end action: {end_action}")
@@ -300,14 +312,25 @@ def hl_runner_viewer():
         page_info = item["value"]
 
         with st.expander(f"変数名: {variable_name}:", expanded=False):
-            st.write(page_info)
-
             # チェックボックスを追加
             delete_checkbox = st.checkbox(
                 f"削除: {variable_name}", key=f"delete_{i}"
             )
             if delete_checkbox:
                 items_to_delete.append(i)
+
+            # 画像データの表示
+            if (
+                isinstance(page_info, dict)
+                and page_info.get("type") == "image"
+            ):
+                st.image(
+                    page_info["data"],
+                    caption=f"Screenshot ({page_info['timestamp']})",
+                    # use_column_width=True,
+                )
+            else:
+                st.write(page_info)
 
     # 削除ボタンを追加
     if st.button("選択したアイテムを削除"):
