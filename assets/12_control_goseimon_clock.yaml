@@ -1,0 +1,25 @@
+# 12_control_goseimon_clock.yaml
+browser:
+  name: chrome
+  options:
+    - "--headless"
+    - "--disable-gpu"
+  start_url: "sgtao.github.io/goseimon-clock/index.html"
+  window_size:
+    width: 1920
+    height: 1080
+actions:
+  - type: wait
+    seconds: 5
+  - type: scrape_page
+    variable: "main_content"
+    target: "main"
+  - type: click
+    target: "Start"
+  - type: wait
+    seconds: 3
+  # - type: press
+  #   key: "s"
+  - type: click
+    target: "Stop"
+end_action: get_screen
