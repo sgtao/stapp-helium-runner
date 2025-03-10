@@ -7,6 +7,7 @@ import helium as hl
 import streamlit as st
 import yaml
 
+from components.RunnerController import RunnerController
 from components.UserKeys import UserKeys
 from components.UserInputs import UserInputs
 
@@ -266,6 +267,9 @@ def sidebar():
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
+
+        runner_ctrl = RunnerController()
+        runner_ctrl.buttons()
 
 
 def config_viewer(config):
