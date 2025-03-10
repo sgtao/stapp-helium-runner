@@ -9,11 +9,14 @@ browser:
     width: 1920
     height: 1080
 actions:
-  - type: write_message
-    target: "search_box"
-    text: "helium selenium github"
-  - type: press
-    key: ENTER
   - type: wait
     seconds: 5
-end_action: stop_run
+  - type: write
+    # target: "search_box"
+    target: ""
+    text: "helium selenium github"
+  - type: press
+    key: "ENTER"
+  - type: wait
+    seconds: 5
+end_action: get_screen

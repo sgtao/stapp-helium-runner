@@ -74,7 +74,10 @@ def run_browser_actions(config):
         #     hl.write(action["text"])
         elif action["type"] == "write":
             try:
-                hl.write(action["text"], into=action["target"])
+                if ("target" not in action) or len(action["target"]) == 0:
+                    hl.write(action["text"])
+                else:
+                    hl.write(action["text"], into=action["target"])
             except LookupError:
                 st.error(
                     f"'{action['type']}': '{action['target']}' not found."
@@ -129,6 +132,8 @@ def run_browser_actions(config):
                 return
         elif action["type"] == "press":
             value = action.get("value")
+            if "key" in action:
+                value = action.get("key")
             if value == "ENTER":
                 hl.press(hl.ENTER)
             else:
@@ -231,6 +236,9 @@ def run_browser_actions(config):
 
         else:
             st.error(f"Unsupported end action: {end_action}")
+
+        # at end_action, wait for 3 seconds.
+        time.sleep(3)
 
 
 def init_st_session_state():
