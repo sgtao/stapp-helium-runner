@@ -16,13 +16,14 @@ class RunnerController:
         with col1:
             if st.button(help="Reset Status", label="🔄"):
                 st.session_state.hl_runner = []
-                st.rerun
+                st.rerun()
         with col2:
             disabled_btn = hl.get_driver() is None
             if st.button(
                 help="Close Browser.", label="❌", disabled=disabled_btn
             ):
                 hl.kill_browser()
+                st.rerun()
         with col3:
             pass
         with col4:
