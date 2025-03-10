@@ -1,5 +1,5 @@
 # 12_control_goseimon_clock.yaml
-browser:
+hl_start_browser:
   name: chrome
   options:
     - "--headless"
@@ -9,17 +9,17 @@ browser:
     width: 1920
     height: 1080
 actions:
-  - type: wait
+  - type: hl_wait
     seconds: 5
-  - type: scrape_page
+  - type: hl_scrape_page
     variable: "main_content"
     target: "main"
-  - type: click
+  - type: hl_click
     target: "Start"
-  - type: wait
+  - type: hl_wait
     seconds: 3
   # - type: press
   #   key: "s"
   - type: click
     target: "Stop"
-end_action: get_screen
+hl_end_action: get_screen

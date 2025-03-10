@@ -1,5 +1,5 @@
 # 11_google_config.yaml
-browser:
+hl_start_browser:
   name: chrome
   options:
     - "--headless"
@@ -9,14 +9,14 @@ browser:
     width: 1920
     height: 1080
 actions:
-  - type: wait
+  - type: hl_wait
     seconds: 5
-  - type: write
+  - type: hl_write
     # target: "search_box"
     target: ""
     text: "helium selenium github"
-  - type: press
+  - type: hl_press
     key: "ENTER"
-  - type: wait
+  - type: hl_wait
     seconds: 5
-end_action: get_screen
+hl_end_action: get_screen

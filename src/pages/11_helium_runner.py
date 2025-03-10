@@ -47,9 +47,9 @@ def get_page_info(web_driver, target="all"):
 
 def run_browser_actions(config):
     # browser設定が存在する場合のみブラウザを起動
-    if "browser" in config:
-        browser_name = config["browser"]["name"]
-        start_url = config["browser"]["start_url"]
+    if "hl_start_browser" in config:
+        browser_name = config["hl_start_browser"]["name"]
+        start_url = config["hl_start_browser"]["start_url"]
 
         if browser_name == "chrome":
             st.session_state.web_driver = hl.start_chrome(start_url)
@@ -68,11 +68,7 @@ def run_browser_actions(config):
             return
 
     for action in actions:
-        if action["type"] == "write_message":
-            hl.write(st.session_state.write_message)
-        # elif action["type"] == "write":
-        #     hl.write(action["text"])
-        elif action["type"] == "write":
+        if action["type"] == "hl_write":
             try:
                 if ("target" not in action) or len(action["target"]) == 0:
                     hl.write(action["text"])
@@ -83,7 +79,7 @@ def run_browser_actions(config):
                     f"'{action['type']}': '{action['target']}' not found."
                 )
                 return
-        elif action["type"] == "write_user_key":
+        elif action["type"] == "hl_write_user_key":
             try:
                 keyname = action.get("key")
                 if keyname not in st.session_state:
@@ -98,7 +94,7 @@ def run_browser_actions(config):
                     f"'{action['type']}': '{action['target']}' not found."
                 )
                 return
-        elif action["type"] == "click":
+        elif action["type"] == "hl_click":
             try:
                 target_name = action["target"]
                 if "user_target" in action:
@@ -130,7 +126,7 @@ def run_browser_actions(config):
                     f"'{action['type']}': '{action['target']}' not found."
                 )
                 return
-        elif action["type"] == "press":
+        elif action["type"] == "hl_press":
             value = action.get("value")
             if "key" in action:
                 value = action.get("key")
@@ -150,7 +146,7 @@ def run_browser_actions(config):
             # wait(action["seconds"])
             # confirm_user("Waiting Run...")
             time.sleep(seconds)
-        elif action["type"] == "go_to":
+        elif action["type"] == "hl_go_to":
             try:
                 url = "..."
                 if "url" in action:
@@ -164,7 +160,7 @@ def run_browser_actions(config):
                 st.error(f"Error navigating to URL: {e}")
                 return
 
-        elif action["type"] == "scrape_page":
+        elif action["type"] == "hl_scrape_page":
             target = "all"
             if "target" in action:
                 target = action["target"]
@@ -197,8 +193,8 @@ def run_browser_actions(config):
                 st.error(f"ページ情報の取得に失敗しました: {e}")
                 return
 
-    if "end_action" in config:
-        end_action = config["end_action"]
+    if "hl_end_action" in config:
+        end_action = config["hl_end_action"]
         if end_action == "kill_browser":
             hl.kill_browser()
             st.session_state.web_driver = None
