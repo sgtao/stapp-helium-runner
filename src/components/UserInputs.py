@@ -9,7 +9,7 @@ class UserInputs:
             loaded_num = len(st.session_state.user_inputs)
             num_inputs = st.number_input(
                 "Number of User Inputs",
-                min_value=loaded_num,
+                min_value=st.session_state.min_user_inputs,
                 max_value=10,
                 value=loaded_num,
                 step=1,

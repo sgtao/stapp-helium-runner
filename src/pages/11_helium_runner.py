@@ -21,6 +21,8 @@ def init_st_session_state():
         st.session_state.web_driver = None
     if "user_inputs" not in st.session_state:
         st.session_state.user_inputs = []
+    if "min_user_inputs" not in st.session_state:
+        st.session_state.min_user_inputs = 0
 
 
 def sidebar():
@@ -48,6 +50,7 @@ def _initialize_user_inputs(config):
     pattern = re.compile(r"user_input_(\d+)")
 
     print("loaded_action")
+    min_user_inputs = 0
     for action in config.get("actions", []):
         for key, value in action.items():
             print(f"key:{key} = {value}")
@@ -59,14 +62,15 @@ def _initialize_user_inputs(config):
             match = pattern.match(value)
             if match:
                 index = int(match.group(1))
-                print(f"- index: {index}")
                 default_value = action.get("user_default", "")
+                print(f"- index: {index} = {default_value}")
 
                 # 配列の拡張
                 while len(st.session_state.user_inputs) <= index:
                     st.session_state.user_inputs.append(
                         {"value": default_value}
                     )
+                    min_user_inputs += 1
 
                 # デフォルト値の設定（上書き防止）
                 current_value = st.session_state.user_inputs[index].get(
@@ -76,6 +80,9 @@ def _initialize_user_inputs(config):
                     st.session_state.user_inputs[index][
                         "value"
                     ] = default_value
+
+    # コンフィグで必要なユーザーインプット数
+    return min_user_inputs
 
 
 def load_config(uploaded_yaml):
@@ -90,9 +97,8 @@ def load_config(uploaded_yaml):
     """
     try:
         config = yaml.safe_load(uploaded_yaml)
-        # st.session_state.user_inputs = []
-        # st.session_state.hl_runner = []
-        _initialize_user_inputs(config)
+        st.session_state.user_inputs = []
+        st.session_state.min_user_inputs = _initialize_user_inputs(config)
         return config
     except yaml.YAMLError as e:
         st.error(f"YAML解析エラー: {str(e)}")
