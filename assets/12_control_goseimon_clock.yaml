@@ -17,9 +17,11 @@ actions:
   - type: hl_click
     target: "Start"
   - type: hl_wait
-    seconds: 3
+    # seconds: 5
+    user_seconds: "user_input_0"
+    user_default: 5
   # - type: press
   #   key: "s"
-  - type: click
+  - type: hl_click
     target: "Stop"
 hl_end_action: get_screen

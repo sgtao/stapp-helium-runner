@@ -11,14 +11,14 @@ from components.UserInputs import UserInputs
 
 
 def init_st_session_state():
+    if "web_driver" not in st.session_state:
+        st.session_state.web_driver = None
     if "config" not in st.session_state:
         st.session_state.config = None
     if "hl_runner" not in st.session_state:
         st.session_state.hl_runner = []
     if "hl_running" not in st.session_state:
         st.session_state.hl_running = False
-    if "web_driver" not in st.session_state:
-        st.session_state.web_driver = None
     if "user_inputs" not in st.session_state:
         st.session_state.user_inputs = []
     if "min_user_inputs" not in st.session_state:
@@ -63,7 +63,7 @@ def _initialize_user_inputs(config):
             if match:
                 index = int(match.group(1))
                 default_value = action.get("user_default", "")
-                print(f"- index: {index} = {default_value}")
+                print(f"- index: {index} (default= {default_value})")
 
                 # 配列の拡張
                 while len(st.session_state.user_inputs) <= index:
@@ -117,13 +117,6 @@ def main():
     if uploaded_file is not None:
         st.session_state.config = None
         try:
-            # config = yaml.safe_load(uploaded_file)
-            # loaded_yaml = yaml.safe_load(uploaded_file)
-            # config = load_config(loaded_yaml)
-            # config = load_config(uploaded_file)
-            # st.session_state.hl_running = False
-            #
-            # main_viewer.config_viewer(config)
             config = load_config(uploaded_file)
             if config:
                 st.session_state.config = config

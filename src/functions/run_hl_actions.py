@@ -148,7 +148,7 @@ def run_hl_actions(config):
             else:
                 st.error(f"'{action['type']}': '{value}' not supported.")
                 return
-        elif action["type"] == "wait":
+        elif action["type"] == "hl_wait":
             seconds = action.get("seconds")
             if "user_seconds" in action:
                 seconds = get_user_input(
@@ -156,8 +156,6 @@ def run_hl_actions(config):
                 )
                 seconds = float(seconds)
 
-            # wait(action["seconds"])
-            # confirm_user("Waiting Run...")
             time.sleep(seconds)
         elif action["type"] == "hl_go_to":
             try:
