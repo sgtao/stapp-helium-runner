@@ -6,11 +6,12 @@ class UserInputs:
     def input_expander(self, keyname="user_inputs"):
         with st.expander("User Inputs", expanded=False):
             # ユーザー入力フィールドの数を取得
+            loaded_num = len(st.session_state.user_inputs)
             num_inputs = st.number_input(
                 "Number of User Inputs",
-                min_value=0,
+                min_value=loaded_num,
                 max_value=10,
-                value=3,
+                value=loaded_num,
                 step=1,
             )
 
