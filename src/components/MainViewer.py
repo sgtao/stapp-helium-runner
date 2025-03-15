@@ -11,19 +11,17 @@ class MainViewer:
         with st.expander("Show Config File:", expanded=False):
             st.write(config)
 
-        # 初回表示時または状態リセット時
-        if not st.session_state.get("hl_running"):
-            # ボタンの状態をセッションステートと連動
-            if st.button(
-                "Run Config",
-                type="primary",
-                key="run_config_main",
-                # disabled=True,
-                disabled=st.session_state.hl_running,
-            ):
-                st.session_state.hl_running = True
-                # button_container.empty()  # ボタンを即時非表示
-                st.rerun()
+        # ボタンの状態をセッションステートと連動
+        if st.button(
+            "Run Config",
+            type="primary",
+            key="run_config_main",
+            # disabled=True,
+            disabled=st.session_state.hl_running,
+        ):
+            st.session_state.hl_running = True
+            # button_container.empty()  # ボタンを即時非表示
+            st.rerun()
 
         # 実行状態の場合
         if st.session_state.get("hl_running"):

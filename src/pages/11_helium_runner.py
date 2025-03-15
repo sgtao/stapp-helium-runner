@@ -108,20 +108,25 @@ def load_config(uploaded_yaml):
         return {}
 
 
+def on_file_upload():
+    st.session_state.config = None
+
+
 def main():
     st.title("Helium Runner")
     main_viewer = MainViewer()
 
-    uploaded_file = st.file_uploader("Choose a YAML config file", type="yaml")
+    uploaded_file = st.file_uploader(
+        "Choose a YAML config file", type="yaml", on_change=on_file_upload
+    )
 
-    if uploaded_file is not None:
-        st.session_state.config = None
+    if uploaded_file is not None and st.session_state.config is None:
         try:
             config = load_config(uploaded_file)
             if config:
                 st.session_state.config = config
                 # main_viewer.config_viewer(st.session_state.config)
-                # st.rerun()
+                st.rerun()
         except yaml.YAMLError as e:
             st.error(f"Error loading YAML file: {e}")
 
