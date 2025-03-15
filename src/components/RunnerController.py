@@ -5,8 +5,8 @@ import streamlit as st
 
 class RunnerController:
     def _clear_hl_states(self):
-        st.session_state.min_user_inputs = 0
-        st.session_state.user_inputs = []
+        # st.session_state.min_user_inputs = 0
+        # st.session_state.user_inputs = []
         st.session_state.hl_running = False
         st.session_state.hl_runner = []
         # st.session_state.config = None
