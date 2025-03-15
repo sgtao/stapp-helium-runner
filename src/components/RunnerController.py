@@ -71,13 +71,30 @@ class RunnerController:
             col5,
         ) = st.columns(5)
         with col1:
-            if st.button(help="Save Params.", label="📥"):
-                self.modal("save_hl_state")
+            if st.button(
+                help="Stop Running",
+                label="⏹️",
+                disabled=(st.session_state.hl_running is False),
+            ):
+                # st.stop()
+                st.session_state.hl_running = False
+                st.rerun()
         with col2:
-            if st.button(help="Force Rerun", label="🔄"):
+            if st.button(
+                help="Save Helium States",
+                label="📥",
+                disabled=st.session_state.hl_running,
+            ):
+                self.modal("save_hl_state")
+        with col3:
+            if st.button(
+                help="Clear Helium States",
+                label="🔄",
+                disabled=st.session_state.hl_running,
+            ):
                 self._clear_hl_states()
                 st.rerun()
-        with col3:
+        with col4:
             disabled_btn = hl.get_driver() is None
             if st.button(
                 help="Close Browser.", label="❌", disabled=disabled_btn
@@ -86,9 +103,5 @@ class RunnerController:
                 st.session_state.web_driver = None
                 self._clear_hl_states()
                 st.rerun()
-        with col3:
-            pass
-        with col4:
-            pass
         with col5:
             pass
