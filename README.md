@@ -8,6 +8,7 @@
 
 ## 主な機能
 - **設定ファイル**: YAML形式の設定ファイルを使用して、自動化タスクを定義.
+  * [設定ファイルの解説](./docs/helium_runner_config.md)
 
 ## 利用方法
 - [poetry cli](https://python-poetry.org/docs/)を利用する
