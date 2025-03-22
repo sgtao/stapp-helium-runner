@@ -1,10 +1,15 @@
 # stapp-helium-runner
-[streamlit](https://streamlit.io/)アプリUI上で、[Helium](https://github.com/mherrmann/helium)を使ってみる
 
-## コンテンツ
+[Streamlit](https://streamlit.io/)アプリUI上で、[Helium](https://github.com/mherrmann/helium)を使ってみる
 
+## 目的
 
-## Usage
+- このプロジェクトは、[Streamlit](https://streamlit.io/)を使ってWebアプリケーションのUIを構築し、[Helium](https://github.com/mherrmann/helium)を介してブラウザの自動操作を行うことを目的としています
+
+## 主な機能
+- **設定ファイル**: YAML形式の設定ファイルを使用して、自動化タスクを定義.
+
+## 利用方法
 - [poetry cli](https://python-poetry.org/docs/)を利用する
 
 ### Setup
