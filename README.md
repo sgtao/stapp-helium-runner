@@ -43,6 +43,8 @@ make-dist           make distribution package
 ### Start as local service
 ```sh
 # streamlit hello
+export RUNNER_USERNAME="<YOUR SITE=ID>"
+export RUNNER_PASSWORD="<YOUR SECRET-KEY>"
 task run
 # streamlit run src/main.py
 # Local URL: http://localhost:8501

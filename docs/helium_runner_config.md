@@ -156,5 +156,41 @@ hl_end_action: "get_screen"
 
 この例では、`user_input_0`というキーでユーザー入力を受け付け、その値をURLとして使用します。スクレイピング結果は`page_info`というキーでセッションステートに保存されます。
 
+
+### 例3：ユーザー入力（ユーザIDとPASSWORD）
+
+この例では、サイトで`ID+PASSWORD`認証が必要なサイトの入力例を示します。
+- 環境変数（`RUNNER_USERNAME`と`RUNNER_PASSWORD`）を設定するとユーザーのキー情報を設定できます
+```sh
+export RUNNER_USERNAME="<YOUR SITE=ID>"
+export RUNNER_PASSWORD="<YOUR SECRET-KEY>"
+task run
+```
+
+- コンフィグ設定例
+```yaml
+hl_start_browser:
+  name: chrome
+  start_url: "https://<site page with authorization of id and password>"
+actions:
+  - type: hl_wait
+    seconds: 5
+  - type: hl_write_user_key
+    key: "runner_username"
+    target: "メールアドレスを入力"
+  - type: hl_write_user_key
+    key: "runner_password"
+    target: "パスワードを入力"
+  - type: hl_click
+    target: "Button:ログイン"
+  - type: hl_wait
+    seconds: 5
+  - type: hl_go_to
+    url: "https://<target page url after authorization>"
+```
+
+この例では、`Runner UserName`と`Runner Password`を使って、サイトの認証をして、目標ページへの移動をします。
+
+
 ---
 Perplexity の Eliot より: pplx.ai/share
