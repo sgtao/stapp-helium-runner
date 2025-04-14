@@ -1,4 +1,5 @@
 # 12_control_goseimon_clock.yaml
+title: control_goseimon_clock
 hl_start_browser:
   name: chrome
   options:

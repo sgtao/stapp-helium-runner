@@ -137,8 +137,12 @@ def main():
     if uploaded_file is not None and st.session_state.config is None:
         try:
             config = load_config(uploaded_file)
-            app_logger.debug_log(f"loaded_config : {uploaded_file}")
             if config:
+                if "title" in config:
+                    config_title = config["title"]
+                    app_logger.info_log(f"loaded_config: {config_title}")
+                else:
+                    app_logger.info_log("loaded_config w.o. title")
                 st.session_state.config = config
                 # main_viewer.config_viewer(st.session_state.config)
                 st.rerun()

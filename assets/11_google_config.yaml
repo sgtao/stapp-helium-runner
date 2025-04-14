@@ -1,4 +1,5 @@
 # 11_google_config.yaml
+title: google_config
 hl_start_browser:
   name: chrome
   options:
