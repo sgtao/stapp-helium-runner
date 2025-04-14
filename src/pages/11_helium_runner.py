@@ -8,6 +8,9 @@ from components.MainViewer import MainViewer
 from components.RunnerController import RunnerController
 from components.UserKeys import UserKeys
 from components.UserInputs import UserInputs
+from functions.AppLogger import AppLogger
+
+APP_TITLE = "Helium Runner"
 
 
 def init_st_session_state():
@@ -46,14 +49,19 @@ def _initialize_user_inputs(config):
     if "actions" not in config:
         return
 
+    app_logger = AppLogger(APP_TITLE)
+
     # user_input_Nの検出用正規表現
     pattern = re.compile(r"user_input_(\d+)")
 
-    print("loaded_action")
+    # print("loaded_action")
+    app_logger.debug_log("loaded_action")
     min_user_inputs = 0
     for action in config.get("actions", []):
         for key, value in action.items():
-            print(f"key:{key} = {value}")
+            # print(f"key:{key} = {value}")
+            app_logger.debug_log(f"key:{key} = {value}")
+
             # 文字列型の値のみ処理
             if not isinstance(value, str):
                 continue
@@ -63,7 +71,10 @@ def _initialize_user_inputs(config):
             if match:
                 index = int(match.group(1))
                 default_value = action.get("user_default", "")
-                print(f"- index: {index} (default= {default_value})")
+                # print(f"- index: {index} (default= {default_value})")
+                app_logger.debug_log(
+                    f"- index: {index} (default= {default_value})"
+                )
 
                 # 配列の拡張
                 while len(st.session_state.user_inputs) <= index:
@@ -113,6 +124,9 @@ def on_file_upload():
 
 
 def main():
+    app_logger = AppLogger(APP_TITLE)
+    app_logger.app_start()
+
     st.title("Helium Runner")
     main_viewer = MainViewer()
 
@@ -123,6 +137,7 @@ def main():
     if uploaded_file is not None and st.session_state.config is None:
         try:
             config = load_config(uploaded_file)
+            app_logger.debug_log(f"loaded_config : {uploaded_file}")
             if config:
                 st.session_state.config = config
                 # main_viewer.config_viewer(st.session_state.config)
@@ -140,5 +155,6 @@ def main():
 
 if __name__ == "__main__":
     init_st_session_state()
+
     sidebar()
     main()
