@@ -4,6 +4,7 @@ import yaml
 
 import streamlit as st
 
+from components.ConfigFiles import ConfigFiles
 from components.MainViewer import MainViewer
 from components.RunnerController import RunnerController
 from components.UserKeys import UserKeys
@@ -127,8 +128,22 @@ def main():
     app_logger = AppLogger(APP_TITLE)
     app_logger.app_start()
 
+    config_files = ConfigFiles()
+
     st.title("Helium Runner")
     main_viewer = MainViewer()
+
+    # selected_config_file = st.selectbox("Select a config file", config_files)
+    selected_config_file = config_files.render_config_selector()
+
+    # 選択されたコンフィグファイルを読み込む
+    if selected_config_file:
+        config = config_files.load_config_from_yaml(selected_config_file)
+        config_files.render_config_viewer(selected_config_file, config)
+        if st.button("Load config", icon="⬆"):
+            app_logger.info_log(f"loaded_config: {selected_config_file}")
+            st.session_state.config = config
+            st.rerun()
 
     uploaded_file = st.file_uploader(
         "Choose a YAML config file", type="yaml", on_change=on_file_upload
