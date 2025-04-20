@@ -51,7 +51,7 @@ def main():
     app_logger = AppLogger(APP_TITLE)
     app_logger.app_start()
 
-    st.title("Log Viewer")
+    st.title("📄 Log Viewer")
     # ログファイルを選択
     log_files = app_logger.get_log_filelist()
     st.session_state.disable_rotate = False

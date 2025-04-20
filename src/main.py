@@ -1,13 +1,14 @@
 import streamlit as st
 
 """
-# Welcome to Streamlit!
+## Welcome to helium-runner App!
 
-Edit `/src` and `/tests` to customize this app to your heart's desire :heart:.
+Heliumライブラリでページ操作する[streamlit](https://streamlit.io/)アプリです。
 """
 
-# サイドバーのページに移動
-# st.page_link("pages/example_app.py", label="Go to Example App")
+# Herium Runner アプリへのリンク
 st.page_link(
     "pages/11_helium_runner.py", label="Go to Helium Runner App", icon="🏃"
 )
+# ログ表示ページへのリンク
+st.page_link("pages/21_logs_viewer.py", label="View Logs", icon="📄")

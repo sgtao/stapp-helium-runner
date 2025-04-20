@@ -130,7 +130,7 @@ def main():
 
     config_files = ConfigFiles()
 
-    st.title("Helium Runner")
+    st.title("🏃 Helium Runner")
     main_viewer = MainViewer()
 
     # selected_config_file = st.selectbox("Select a config file", config_files)
