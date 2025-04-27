@@ -65,7 +65,11 @@ def run_hl_actions(config):
         start_url = config["hl_start_browser"]["start_url"]
 
         if browser_name == "chrome":
-            st.session_state.web_driver = hl.start_chrome(start_url)
+            # st.session_state.web_driver = hl.start_chrome(start_url)
+            st.session_state.web_driver = hl.start_chrome(
+                start_url,
+                headless=True
+            )
         elif browser_name == "firefox":
             st.session_state.web_driver = hl.start_firefox(start_url)
         else:
