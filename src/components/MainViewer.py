@@ -31,8 +31,10 @@ class MainViewer:
                     run_hl_actions(config)
                 except Exception as e:
                     st.error(f"実行エラー: {str(e)}")
+                    time.sleep(3)
                 finally:
                     st.session_state.hl_running = False
+                    time.sleep(1)
                     st.rerun()
 
     def hl_runner_viewer(self):

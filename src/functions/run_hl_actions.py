@@ -67,8 +67,7 @@ def run_hl_actions(config):
         if browser_name == "chrome":
             # st.session_state.web_driver = hl.start_chrome(start_url)
             st.session_state.web_driver = hl.start_chrome(
-                start_url,
-                headless=True
+                start_url, headless=True
             )
         elif browser_name == "firefox":
             st.session_state.web_driver = hl.start_firefox(start_url)
@@ -172,8 +171,9 @@ def run_hl_actions(config):
                     )
                 hl.go_to(url)
             except Exception as e:
-                st.error(f"Error navigating to URL: {e}")
-                return
+                # st.error(f"Error navigating to URL: {e}")
+                # return
+                raise f"Error navigating to URL: {e}"
 
         elif action["type"] == "hl_scrape_page":
             target = "all"
@@ -205,8 +205,9 @@ def run_hl_actions(config):
                     st.warning("ページ情報がありません。")
 
             except Exception as e:
-                st.error(f"ページ情報の取得に失敗しました: {e}")
-                return
+                # st.error(f"ページ情報の取得に失敗しました: {e}")
+                # return
+                raise f"ページ情報の取得に失敗しました: {e}"
 
     if "hl_end_action" in config:
         end_action = config["hl_end_action"]
@@ -221,6 +222,13 @@ def run_hl_actions(config):
             try:
                 # メモリ上でスクリーンショットを処理
                 driver = hl.get_driver()
+                # w = driver.execute_script(
+                #     "return document.body.parentNode.scrollWidth"
+                # )
+                # h = driver.execute_script(
+                #     "return document.body.parentNode.scrollHeight"
+                # )
+                # driver.set_window_size(w, h)
                 screenshot_png = driver.get_screenshot_as_png()
 
                 # BASE64エンコード
@@ -243,10 +251,12 @@ def run_hl_actions(config):
                 st.success("スクリーンショットを保存しました")
 
             except Exception as e:
-                st.error(f"スクリーンショット取得失敗: {e}")
+                # st.error(f"スクリーンショット取得失敗: {e}")
+                raise f"スクリーンショット取得失敗: {e}"
 
         else:
-            st.error(f"Unsupported end action: {end_action}")
+            # st.error(f"Unsupported end action: {end_action}")
+            raise f"Unsupported end action: {end_action}"
 
         # at end_action, wait for 3 seconds.
         time.sleep(3)
