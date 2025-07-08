@@ -41,6 +41,32 @@ def get_page_info(web_driver, target="all"):
     return {"type": "text", "title": title, "url": url, "html": html}
 
 
+def get_target_link(web_driver, target="all"):
+    """
+    ページタイトル、URL、HTMLを取得する関数。
+    """
+    title = web_driver.title
+    url = web_driver.current_url
+
+    if target == "all":
+        html = web_driver.page_source
+    else:
+        soup = bs(web_driver.page_source, "html.parser")
+        elements = soup.select(target)
+        # # aタグの場合はhref属性を取得
+        # if target == "a" or target == "a[href]":
+        #     html = [element.get("href") for element in elements]
+        # else:
+        #     html = [element.get_text() for element in elements]
+        # リンク情報を辞書形式で取得
+        html = [
+            {"text": element.get_text(strip=True), "url": element.get("href")}
+            for element in elements
+        ]
+
+    return {"type": "text", "title": title, "url": url, "html": html}
+
+
 def get_user_input(key, default_value):
     """
     ユーザー入力を取得する関数。
@@ -186,6 +212,40 @@ def run_hl_actions(config):
 
                 # ページ情報を取得
                 page_info = get_page_info(driver, target)
+
+                # 変数名を取得
+                variable = action.get("variable")
+
+                # Streamlitのセッションステートに格納
+                # st.session_state.hl_runner[variable] = page_info
+                st.session_state.hl_runner.append(
+                    {
+                        "key": variable,
+                        "value": page_info,
+                    }
+                )
+
+                if page_info:
+                    st.info(f"ページ情報を変数 [{variable}] に保存しました。")
+                else:
+                    st.warning("ページ情報がありません。")
+
+            except Exception as e:
+                # st.error(f"ページ情報の取得に失敗しました: {e}")
+                # return
+                raise f"ページ情報の取得に失敗しました: {e}"
+
+        elif action["type"] == "hl_scrape_links":
+            target = "all"
+            if "target" in action:
+                target = action["target"]
+
+            try:
+                # SeleniumのWebDriverオブジェクトを取得
+                driver = hl.get_driver()
+
+                # リンク情報を取得
+                page_info = get_target_link(driver, target)
 
                 # 変数名を取得
                 variable = action.get("variable")
