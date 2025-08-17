@@ -36,7 +36,7 @@ def sidebar():
         user_keys.input_key()
 
         user_inputs = UserInputs()
-        user_inputs.input_expander(user_inputs_key)
+        user_inputs.render_inputs(user_inputs_key)
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
