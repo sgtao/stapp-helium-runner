@@ -9,6 +9,27 @@ from functions.AppLogger import AppLogger
 
 # APP_TITLE = "APIクライアントアプリ"
 APP_TITLE = "Log Viewer"
+DEFAULT_LOG_FILE = "logs/api_request.log"
+
+
+def render_log_selector(app_logger):
+    # ログファイルを選択
+    log_files = app_logger.get_log_filelist()
+    st.session_state.disable_rotate = False
+
+    def _on_change_select():
+        st.session_state.disable_rotate = (
+            st.session_state.log_selector != DEFAULT_LOG_FILE
+        )
+
+    index_log_file = log_files.index(DEFAULT_LOG_FILE)
+    return st.selectbox(
+        label="Select log file",
+        options=log_files,
+        key="log_selector",
+        index=index_log_file,
+        on_change=_on_change_select,
+    )
 
 
 # ログファイル表示関数
@@ -46,29 +67,7 @@ def rotate_log_file(log_file_path, app_logger):
         st.error(f"An error occurred: {e}")
 
 
-# メイン関数
-def main():
-    app_logger = AppLogger(APP_TITLE)
-    app_logger.app_start()
-
-    st.title("📄 Log Viewer")
-    # ログファイルを選択
-    log_files = app_logger.get_log_filelist()
-    st.session_state.disable_rotate = False
-
-    def _on_change_select():
-        st.session_state.disable_rotate = (
-            selected_log_file != "logs/api_request.log"
-        )
-
-    selected_log_file = st.selectbox(
-        label="Select log file",
-        options=log_files,
-        index=0,
-        on_change=_on_change_select,
-    )
-
-    # ログファイルリネームボタン
+def render_viewer_controller(app_logger):
     log_file_path = app_logger.get_logfile_name()
     col1, col2 = st.columns(2)
     with col1:
@@ -91,8 +90,24 @@ def main():
         if st.button("Rerun (`R`)", icon="🏃"):
             st.rerun()
 
-    # display_log(log_file_path)
-    display_log(selected_log_file)
+
+# メイン関数
+def main():
+    app_logger = AppLogger(APP_TITLE)
+    app_logger.app_start()
+
+    st.page_link("main.py", label="Back to Home", icon="🏠")
+
+    st.title("🗒️ Log Viewer")
+    # ログファイルを選択
+    selected_log_file = render_log_selector(app_logger)
+
+    # display log
+    with st.expander("display selected log"):
+        display_log(selected_log_file)
+
+    # ログファイルリネームボタン
+    render_viewer_controller(app_logger)
 
 
 if __name__ == "__main__":
