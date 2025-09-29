@@ -21,6 +21,18 @@ poetry install
 # start poetry virtual env.
 # poetry shell # for poetry 1.x version
 eval $(poetry env activate) # for poetry 2.x version
+
+# When preset RUNNER ID and PASSWORD, setenv tem
+export RUNNER_USERNAME="xxx"
+export RUNNER_PASSWORD="yyyyy"
+```
+
+#### Setup for Windows
+```PowerShell
+Invoke-Expression (poetry env activate)
+
+$env:RUNNER_USERNAME = "xxx"
+$env:RUNNER_PASSWORD = "yyyyy"
 ```
 
 ### コマンド一覧
