@@ -1,0 +1,28 @@
+# scrape_specified_page.yaml
+title: scrape_specified_page
+note: |
+  - scrape contents and links of user_input_0.
+  - **input page url to `user_input_0`**
+hl_start_browser:
+  name: chrome
+  options:
+    - "--headless"
+    - "--disable-gpu"
+  start_url: "https://sgtao.github.io/goseimon-clock/index.html"
+  window_size:
+    width: 1920
+    height: 1080
+actions:
+  - type: hl_go_to
+    # url: "https://unlimited.globis.co.jp/ja/courses/8f9dac7b"
+    user_url: "user_input_0"
+    user_default: "https://sgtao.github.io/goseimon-clock/index.html"
+  - type: hl_wait
+    seconds: 10
+  - type: "hl_scrape_page"
+    variable: "body"
+    target: "body"
+  - type: "hl_scrape_links"
+    variable: "link_items"
+    target: "a"
+hl_end_action: get_screen
