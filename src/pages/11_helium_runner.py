@@ -23,20 +23,15 @@ def init_st_session_state():
         st.session_state.hl_runner = []
     if "hl_running" not in st.session_state:
         st.session_state.hl_running = False
-    if "user_inputs" not in st.session_state:
-        st.session_state.user_inputs = []
-    if "min_user_inputs" not in st.session_state:
-        st.session_state.min_user_inputs = 0
 
 
 def sidebar():
-    user_inputs_key = "user_inputs"
     with st.sidebar:
         user_keys = UserKeys()
         user_keys.input_key()
 
         user_inputs = UserInputs()
-        user_inputs.render_inputs(user_inputs_key)
+        user_inputs.render_inputs()
 
         with st.expander("session_state", expanded=False):
             st.write(st.session_state)
