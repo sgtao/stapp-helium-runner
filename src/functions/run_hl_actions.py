@@ -6,6 +6,10 @@ from bs4 import BeautifulSoup as bs
 import helium as hl
 import streamlit as st
 
+from functions.AppLogger import AppLogger
+
+APP_TITLE = "Helium Runner"
+
 
 @st.dialog("Pause for next action")
 def confirm_user(message):
@@ -85,6 +89,8 @@ def get_user_input(key, default_value):
 
 
 def run_hl_actions(config):
+    app_logger = AppLogger(APP_TITLE)
+
     # browser設定が存在する場合のみブラウザを起動
     if "hl_start_browser" in config:
         browser_name = config["hl_start_browser"]["name"]
@@ -101,6 +107,8 @@ def run_hl_actions(config):
             st.error(f"Unsupported browser: {browser_name}")
             st.session_state.web_driver = None
             return
+
+        app_logger.info_log(f"start_browser {browser_name} to {start_url}")
 
     actions = []
     if "actions" in config:
@@ -196,6 +204,8 @@ def run_hl_actions(config):
                         action.get("user_url"), action.get("user_default")
                     )
                 hl.go_to(url)
+                app_logger.info_log(f"go to {url}")
+
             except Exception as e:
                 # st.error(f"Error navigating to URL: {e}")
                 # return
