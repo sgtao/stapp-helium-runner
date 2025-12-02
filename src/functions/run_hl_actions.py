@@ -215,6 +215,10 @@ def run_hl_actions(config):
             target = "all"
             if "target" in action:
                 target = action["target"]
+            elif "user_target" in action:
+                target = get_user_input(
+                    action.get("user_target"), action.get("user_default")
+                )
 
             try:
                 # SeleniumのWebDriverオブジェクトを取得
