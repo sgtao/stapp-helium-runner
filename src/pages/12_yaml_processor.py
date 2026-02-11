@@ -16,10 +16,11 @@ def extract_top_props_keys(raw_data: dict, top_props: str = ".") -> list[str]:
         if "key" in item
     ]
 
+
 def build_property_options(raw_data: dict):
     options = {
-        "YAML全体": ".",
-        "hl_runner（全体）": "hl_runner",
+        "Whole": ".",
+        "hl_runner(Whole)": "hl_runner",
     }
 
     if "hl_runner" in raw_data:
@@ -30,6 +31,7 @@ def build_property_options(raw_data: dict):
                     f"hl_runner[?key=='{key}'].value | [0]"
                 )
     return options
+
 
 def extract_property_from_data(raw_data: dict, property_path: str):
     if property_path == ".":
@@ -72,7 +74,7 @@ def main():
             page_data = processor.execute(raw_data)
 
             # --- 4.2 プレビュー表示 (F-31) ---
-            st.header(f"📊 Summary: {page_data.title}")
+            st.subheader(f"📊 Summary: {page_data.title}")
             col1, col2 = st.columns(2)
             col1.metric("Base URL", page_data.base_url)
             col2.metric("Unique Links", page_data.unique_links_count)
