@@ -125,6 +125,8 @@ def main():
 
     config_files = ConfigFiles()
 
+    st.page_link("main.py", label="Back to Home", icon="🏠")
+
     st.title("🏃 Helium Runner")
     main_viewer = MainViewer()
 

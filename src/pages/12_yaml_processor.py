@@ -9,14 +9,6 @@ from logic.yaml_handler import YamlParser
 from logic.processor import DataProcessingUseCase
 
 
-def extract_top_props_keys(raw_data: dict, top_props: str = ".") -> list[str]:
-    return [
-        f"{top_props}.{item["key"]}"
-        for item in raw_data.get(top_props, [])
-        if "key" in item
-    ]
-
-
 def build_property_options(raw_data: dict):
     options = {
         "Whole": ".",
@@ -42,8 +34,10 @@ def extract_property_from_data(raw_data: dict, property_path: str):
 
 
 def main():
-    st.set_page_config(page_title="YAML Data Extractor", layout="wide")
-    st.title("📄 YAML Data Extractor & Processor")
+    st.set_page_config(page_title="YAML Data Processor", layout="wide")
+    st.page_link("main.py", label="Back to Home", icon="🏠")
+
+    st.header("📄 YAML Data Processor")
 
     uploaded_file = st.file_uploader(
         "YAMLファイルをアップロードしてください", type=["yaml", "yml"]
@@ -53,9 +47,6 @@ def main():
         try:
             # Infrastructure & UseCase の実行
             raw_data = YamlParser.parse(uploaded_file)
-
-            # keys = [".", "hl_runner"]
-            # keys += extract_top_props_keys(raw_data, "hl_runner")
             options = build_property_options(raw_data)
 
             # selected_key = st.selectbox(
