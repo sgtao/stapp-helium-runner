@@ -3,7 +3,7 @@ import time
 
 import streamlit as st
 
-from functions.run_hl_actions import run_hl_actions
+from logic.run_hl_actions import run_hl_actions
 
 
 class MainViewer:

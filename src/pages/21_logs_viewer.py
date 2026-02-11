@@ -5,7 +5,7 @@ import time
 
 import streamlit as st
 
-from functions.AppLogger import AppLogger
+from logic.AppLogger import AppLogger
 
 # APP_TITLE = "APIクライアントアプリ"
 APP_TITLE = "Log Viewer"
