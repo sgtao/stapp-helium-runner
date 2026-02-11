@@ -1,8 +1,18 @@
 # yaml_processor.py
 import streamlit as st
 import pandas as pd
+import yaml
+
 from logic.yaml_handler import YamlParser
 from logic.processor import DataProcessingUseCase
+
+
+def extract_top_props_keys(raw_data: dict, top_props: str = ".") -> list[str]:
+    return [
+        f"{top_props}.{item["key"]}"
+        for item in raw_data.get(top_props, [])
+        if "key" in item
+    ]
 
 
 def main():
@@ -17,6 +27,19 @@ def main():
         try:
             # Infrastructure & UseCase の実行
             raw_data = YamlParser.parse(uploaded_file)
+
+            keys = [".", "hl_runner"]
+            keys += extract_top_props_keys(raw_data, "hl_runner")
+
+            # selected_key = st.selectbox(
+            st.selectbox("🔍 抽出対象を選択してください", options=keys)
+
+            # --- YAML全体表示 ---
+            with st.expander("📂 Uploaded YAML (raw view)", expanded=False):
+                st.code(
+                    yaml.dump(raw_data, allow_unicode=True), language="yaml"
+                )
+
             processor = DataProcessingUseCase()
             page_data = processor.execute(raw_data)
 
