@@ -4,12 +4,12 @@ import yaml
 
 import streamlit as st
 
-from components.ConfigFiles import ConfigFiles
-from components.MainViewer import MainViewer
-from components.RunnerController import RunnerController
-from components.UserKeys import UserKeys
-from components.UserInputs import UserInputs
-from functions.AppLogger import AppLogger
+from ui.ConfigFiles import ConfigFiles
+from ui.MainViewer import MainViewer
+from ui.RunnerController import RunnerController
+from ui.UserKeys import UserKeys
+from ui.UserInputs import UserInputs
+from logic.AppLogger import AppLogger
 
 APP_TITLE = "Helium Runner"
 

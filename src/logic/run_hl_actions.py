@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup as bs
 import helium as hl
 import streamlit as st
 
-from functions.AppLogger import AppLogger
+from logic.AppLogger import AppLogger
 
 APP_TITLE = "Helium Runner"
 
