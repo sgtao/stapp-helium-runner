@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 import yaml
 
+import jmespath
+
 from logic.yaml_handler import YamlParser
 from logic.processor import DataProcessingUseCase
 
@@ -13,6 +15,28 @@ def extract_top_props_keys(raw_data: dict, top_props: str = ".") -> list[str]:
         for item in raw_data.get(top_props, [])
         if "key" in item
     ]
+
+def build_property_options(raw_data: dict):
+    options = {
+        "YAML全体": ".",
+        "hl_runner（全体）": "hl_runner",
+    }
+
+    if "hl_runner" in raw_data:
+        for item in raw_data["hl_runner"]:
+            key = item.get("key")
+            if key:
+                options[f"hl_runner.{key}"] = (
+                    f"hl_runner[?key=='{key}'].value | [0]"
+                )
+    return options
+
+def extract_property_from_data(raw_data: dict, property_path: str):
+    if property_path == ".":
+        return raw_data
+    # ".hl_runner.body" → "hl_runner[?key=='body'].value | [0]"
+    query = property_path.lstrip(".")
+    return jmespath.search(query, raw_data)
 
 
 def main():
@@ -28,11 +52,15 @@ def main():
             # Infrastructure & UseCase の実行
             raw_data = YamlParser.parse(uploaded_file)
 
-            keys = [".", "hl_runner"]
-            keys += extract_top_props_keys(raw_data, "hl_runner")
+            # keys = [".", "hl_runner"]
+            # keys += extract_top_props_keys(raw_data, "hl_runner")
+            options = build_property_options(raw_data)
 
             # selected_key = st.selectbox(
-            st.selectbox("🔍 抽出対象を選択してください", options=keys)
+            label = st.selectbox("🔍 抽出対象を選択してください", options)
+            query = options[label]
+
+            raw_data = extract_property_from_data(raw_data, query)
 
             # --- YAML全体表示 ---
             with st.expander("📂 Uploaded YAML (raw view)", expanded=False):
