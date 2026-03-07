@@ -12,7 +12,9 @@ st.page_link(
 )
 # YAML Extractor アプリへのリンク
 st.page_link(
-    "pages/12_yaml_processor.py", label="Go to YAML Data Processor App", icon="📄"
+    "pages/12_yaml_processor.py",
+    label="Go to YAML Data Processor App",
+    icon="📄",
 )
 # ログ表示ページへのリンク
 st.page_link("pages/21_logs_viewer.py", label="View Logs", icon="📄")

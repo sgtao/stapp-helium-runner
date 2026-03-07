@@ -1,5 +1,8 @@
 # 12_control_goseimon_clock.yaml
 title: control_goseimon_clock
+note: |
+  - start browser and wait
+  - optional: **`user_input_0` is waiting period**
 hl_start_browser:
   name: chrome
   options:
